@@ -25,10 +25,10 @@ class Schelling_Model:
         self.city = np.reshape(self.city, (int(np.sqrt(grid_size)), int(np.sqrt(grid_size))))
 
 
+    # Return a list of neighbor agents' type (-2, -1, 0, 1, 2); cspace is always 1; o_row, o_col are using for prevent counting the agent itself.
     def get_neighbor_of_eight(self, row, col, c_space, o_row, o_col):
         neighborhood = []
 
-        
         if (row-c_space)>=0 and (col-c_space)>=0 and not((row-c_space)==o_row and (col-c_space)==o_col):
             neighborhood.append(self.city[row-c_space, col-c_space])
         if (col-c_space)>=0 and not((row)==o_row and (col-c_space)==o_col):
@@ -49,6 +49,7 @@ class Schelling_Model:
             neighborhood.append(self.city[row+c_space, col])
         return neighborhood
 
+    #Return the tuple that contains row and col that the first satisfied empty space it find. agent (-2, -1, 0, 1, 2)
     def find_closest_empty_house(self, row, col, agent):
         # print("trying to find a satisfy house")
         for cspace in range(1,49):
@@ -105,7 +106,8 @@ class Schelling_Model:
                                 return (nrow, max_col)
 
         return None
-
+    
+    #Return the number of simliar agent in a list
     def check_similar(self,a_list, list_size, value):
         count = 0
         for i in range(list_size):
@@ -117,6 +119,7 @@ class Schelling_Model:
                     count = count + 1            
         return count
     
+    #Return a boolean if agent will be satisfied with the selected space.  o_row, o_col are using by get_neighbor_of_eight for prevent counting the agent itself.
     def is_satisfaction(self, row, col, agent, o_row, o_col):
         is_satisfaction = False
         neighborhood = self.get_neighbor_of_eight(row, col, 1, o_row, o_col)
@@ -134,7 +137,7 @@ class Schelling_Model:
         return is_satisfaction
 
 
-
+    #The main running program.
     def iteration(self):
         # print("iteration start")
         empty_list = []
@@ -187,7 +190,7 @@ class Schelling_Model:
 
 
 
-#Streamlit App
+#Streamlit App Front-end
 
 st.title("Schelling's Model of Segregation")
 
@@ -206,14 +209,10 @@ schelling = Schelling_Model(2500, p_ratio, f_satisfaction_threshold,
 #Plot the graphs at initial stage
 plt.style.use("ggplot")
 plt.figure(figsize=(8, 8))
-
-
 plt.set_cmap('bwr')
 plt.axis('off')
 plt.pcolor(schelling.city, vmin=-2, vmax=2, edgecolors='w', linewidths=1)
-
 city_plot = st.pyplot(plt)
-
 step_number = st.empty()
 progress_bar = st.progress(0)
 
